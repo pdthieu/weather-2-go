@@ -4,9 +4,11 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/WORK/weather-2-go/app/src/main/res/layout/activity_main.xml" value="0.2" />
+        <entry key="..\:/WORK/weather-2-go/app/src/main/res/layout/activity_maps.xml" value="0.1" />
         <entry key="..\:/WORK/weather-2-go/app/src/main/res/layout/fragment_list_location.xml" value="0.2" />
         <entry key="..\:/WORK/weather-2-go/app/src/main/res/layout/fragment_main.xml" value="0.12447916666666667" />
         <entry key="..\:/WORK/weather-2-go/app/src/main/res/layout/fragment_map.xml" value="0.2" />
+        <entry key="..\:/WORK/weather-2-go/app/src/main/res/layout/fragment_maps.xml" value="0.11927083333333334" />
       </map>
     </option>
   </component>
