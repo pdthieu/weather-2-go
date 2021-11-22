@@ -48,7 +48,7 @@ import java.util.Date;
 import java.util.List;
 
 public class MapsFragment extends Fragment implements OnMapReadyCallback,
-        GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener,
+        GoogleMap.OnMarkerClickListener,
         GoogleMap.OnMarkerDragListener, GoogleMap.OnMapClickListener {
 
     private GoogleMap mMap;
@@ -65,11 +65,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback,
 
         mMap.setOnMarkerClickListener(this);
         mMap.setOnMapClickListener(this);
-
         mMap.setOnMarkerDragListener(this);
-
-        mMap.setOnInfoWindowClickListener(this);
-
 
 //        googleMap.addMarker(new MarkerOptions().position(hcmus).title("Marker in HCMUS"));
         googleMap.moveCamera(CameraUpdateFactory.newLatLng(hcmus));
@@ -155,11 +151,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback,
 
         requestQueue.add(stringRequest);
         return false;
-    }
-
-    @Override
-    public void onInfoWindowClick(@NonNull Marker marker) {
-
     }
 
     @Override

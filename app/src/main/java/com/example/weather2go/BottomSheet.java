@@ -111,18 +111,16 @@ public class BottomSheet extends BottomSheetDialogFragment {
             long l = Long.valueOf(day);
             Date date = new Date(l * 1000L);
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEEE yyyy-MM-dd " +
-                    "HH:mm:ss", new Locale("en"));
-            String dday = simpleDateFormat.format(date);
-            txtDay.setText(dday);
+                    "HH:mm", new Locale("en"));
+            String Day = simpleDateFormat.format(date);
+            txtDay.setText(Day);
 //
             int temp = (int) weather.main.getTemp() - 273;
             txtTemp.setText(String.valueOf(temp) + "°C");
 //
             String icon = weather.currentWeather.getIcon();
-            URL url = new URL("https://openweathermap.org/img/wn/" + icon + "@2x.png");
             Picasso.with(imgIcon.getContext()).load("https://openweathermap.org/img/wn/" + icon +
-                    ".png").into(imgIcon);
-            System.out.println(url);
+                    "@2x.png").into(imgIcon);
 
         } catch (Exception e) {
             System.out.println(e);
