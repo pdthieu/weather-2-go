@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     tools:context=".BottomSheet"
     android:orientation="vertical"
-    android:background="#CFCDD1">
+    android:background="@drawable/background_bottom_sheet">
 
     <TextView
         android:layout_marginTop="10dp"
@@ -35,7 +35,7 @@
         android:id="@+id/textViewTemp"
         android:layout_gravity="center"
         android:layout_marginTop="5dp"
-        android:textColor="#f20"
+        android:textColor="#BD837A"
         android:text="Temperature"
         android:textSize="25dp"
         android:layout_width="wrap_content"

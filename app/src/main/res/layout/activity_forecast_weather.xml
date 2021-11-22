@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     tools:context=".ForecastWeather"
     android:orientation="vertical"
-    android:background="@drawable/background">
+    android:background="@drawable/background_bottom_sheet">
 
     <ImageView
         android:id="@+id/imageViewBack"
@@ -20,7 +20,7 @@
         android:id="@+id/cityName"
         android:layout_marginTop="5dp"
         android:layout_gravity="center"
-        android:textColor="#316cb9"
+        android:textColor="#D1CA47"
         android:textStyle="bold"
         android:text="City Name"
         android:textSize="30dp"/>
