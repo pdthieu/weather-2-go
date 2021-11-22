@@ -1,6 +1,6 @@
 package com.example.weather2go.model;
 
-public class Weather{
+public class Weather {
     private int Timezone;
     private int ID;
     private String Name;
