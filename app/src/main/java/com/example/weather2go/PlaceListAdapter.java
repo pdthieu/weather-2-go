@@ -4,14 +4,17 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.view.menu.ActionMenuItem;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.viewpager.widget.ViewPager;
@@ -26,26 +29,46 @@ import com.example.weather2go.model.Place;
 import com.example.weather2go.model.Weather;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
+import org.w3c.dom.Text;
 
+import java.lang.reflect.Array;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 public class PlaceListAdapter extends RecyclerView.Adapter<PlaceListAdapter.PlaceViewHolder> {
 
     private final Activity mActivity;
     private final LayoutInflater mInflater;
-    private final ArrayList<Place> mPlaceList;
+    private final ArrayList<String> mPlaceList;
+    private final ArrayList<String> visiblePlaceList;
+    private final SwipeRefreshLayout mSwipeRefreshLayout;
+    private final RecyclerView mRecyclerView;
+    private final TextView mEmptyView;
+    private String mFilter;
 
 
-    public PlaceListAdapter(Activity activity, Context context, ArrayList<Place> placeList) {
+    public PlaceListAdapter(Activity activity, Context context, ArrayList<String> placeList, SwipeRefreshLayout swipeRefreshLayout, TextView emptyView) {
         mActivity = activity;
         mInflater = LayoutInflater.from(context);
         mPlaceList = placeList;
+        visiblePlaceList = new ArrayList<>(mPlaceList);
+        mSwipeRefreshLayout = swipeRefreshLayout;
+        mRecyclerView = mSwipeRefreshLayout.findViewById(R.id.recyclerview);
+        mEmptyView = emptyView;
+        mFilter = "";
     }
 
     class PlaceViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -75,9 +98,9 @@ public class PlaceListAdapter extends RecyclerView.Adapter<PlaceListAdapter.Plac
             mIcon = itemView.findViewById(R.id.weather_icon);
         }
 
-        public void bindPlace(Context context, Place place) {
+        public void bindPlace(Context context, String place) {
             RequestQueue requestQueue = Volley.newRequestQueue(context);
-            String url = "https://api.openweathermap.org/data/2.5/weather?lat=" + place.getLat() + "&lon=" + place.getLon() + "&appid=18a8967084c88b2a4b6e0e5045e5ac03";
+            String url = "https://api.openweathermap.org/data/2.5/weather?q=" + place.replace(' ', '+') + "&appid=18a8967084c88b2a4b6e0e5045e5ac03";
 
             StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                     new Response.Listener<String>() {
@@ -135,7 +158,7 @@ public class PlaceListAdapter extends RecyclerView.Adapter<PlaceListAdapter.Plac
             int mPosition = getLayoutPosition();
 
             // Use that to access the affected item in mWordList.
-            Place place = mPlaceList.get(mPosition);
+            String place = visiblePlaceList.get(mPosition);
 
             ViewPager viewPager = mActivity.findViewById(R.id.viewPager);
             viewPager.setCurrentItem(0);
@@ -148,7 +171,7 @@ public class PlaceListAdapter extends RecyclerView.Adapter<PlaceListAdapter.Plac
 
             MapsFragment map = (MapsFragment) vpAdapter.getItem(0);
 
-            map.focusOnLatLon(place.getLat(), place.getLon(), 10);
+//            map.focusOnLatLon(place.getLat(), place.getLon(), 10);
         }
     }
 
@@ -161,19 +184,74 @@ public class PlaceListAdapter extends RecyclerView.Adapter<PlaceListAdapter.Plac
     @Override
     public void onBindViewHolder(PlaceListAdapter.PlaceViewHolder holder, int position) {
         // Retrieve the data for that position.
-        Place mCurrent = mPlaceList.get(position);
+        String mCurrent = visiblePlaceList.get(position);
         // Add the data to the view holder.
         holder.bindPlace(mInflater.getContext(), mCurrent);
     }
 
-    public void update(SwipeRefreshLayout swipeRefreshLayout) {
-        swipeRefreshLayout.setRefreshing(true);
-        this.notifyDataSetChanged();
-        swipeRefreshLayout.setRefreshing(false);
-    }
-
     @Override
     public int getItemCount() {
-        return mPlaceList.size();
+        return visiblePlaceList.size();
+    }
+
+    public void update() {
+
+        final FirebaseFirestore db = FirebaseFirestore.getInstance();
+        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        final String uid = user.getUid();
+        final DocumentReference docRef = db.collection("users").document(uid);
+
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        ArrayList<String> places = (ArrayList<String>) document.get("places");
+
+                        mPlaceList.clear();
+                        for (String p : places) {
+                            mPlaceList.add(p);
+                            Log.d("Place", p);
+                        }
+
+                    } else {
+                        Log.d("Test", "No such document");
+                    }
+                } else {
+                    Log.d("test", "get failed with ", task.getException());
+                }
+
+                filter(mFilter);
+                mSwipeRefreshLayout.setRefreshing(false);
+            }
+        });
+    }
+
+    public void filter(String text) {
+        mFilter = text;
+        visiblePlaceList.clear();
+        if (text.isEmpty()) {
+            visiblePlaceList.addAll(mPlaceList);
+        }
+        else {
+            text = text.toLowerCase();
+            for (String place: mPlaceList) {
+                if (place.toLowerCase().contains(text)) {
+                    visiblePlaceList.add(place);
+                }
+            }
+        }
+
+        if (visiblePlaceList.isEmpty()) {
+            mRecyclerView.setVisibility(View.GONE);
+            mEmptyView.setVisibility(View.VISIBLE);
+        }
+        else {
+            mRecyclerView.setVisibility(View.VISIBLE);
+            mEmptyView.setVisibility(View.GONE);
+        }
+
+        notifyDataSetChanged();
     }
 }

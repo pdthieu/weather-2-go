@@ -10,6 +10,8 @@ import android.net.Uri;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -58,6 +60,20 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback,
     private final String url = "https://api.openweathermap.org/data/2.5/weather";
     private final String appid = "18a8967084c88b2a4b6e0e5045e5ac03";
     private List<Marker> listMarker = new ArrayList<Marker>();
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        MenuItem item = menu.findItem(R.id.action_search);
+        if (item != null) {
+            item.setVisible(false);
+        }
+    }
 
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
