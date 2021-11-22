@@ -13,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.tabs.TabLayout;
@@ -32,7 +33,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // TEST
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -57,7 +57,6 @@ public class MainActivity extends AppCompatActivity {
 //                        Log.w(TAG, "Error adding document", e);
 //                    }
 //                });
-        // END TEST
 
         tabLayout = findViewById(R.id.tabLayout);
         viewPager = findViewById(R.id.viewPager);
@@ -66,8 +65,9 @@ public class MainActivity extends AppCompatActivity {
 
         VPAdapter vpAdapter = new VPAdapter(getSupportFragmentManager(),
                 FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
+
         vpAdapter.addFragment(new MapsFragment(), "Maps");
-        vpAdapter.addFragment(new LocationsFragment(), "Locations");
+        vpAdapter.addFragment(new LocationsFragment(), "Places");
         viewPager.setAdapter(vpAdapter);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.app_bar);
