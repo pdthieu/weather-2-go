@@ -15,6 +15,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -83,18 +85,26 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback,
     FusedLocationProviderClient client;
     SupportMapFragment supportMapFragment;
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        MenuItem item = menu.findItem(R.id.action_search);
+        if (item != null) {
+            item.setVisible(false);
+        }
+    }
+
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
-        // Initialize fused location
-
-        // Check permission
-//        getCurrentLocation();
 
         mMap.setOnMarkerClickListener(this);
         mMap.setOnMapClickListener(this);
         mMap.setOnMarkerDragListener(this);
-
     }
 
     private void getCurrentLocation() {
@@ -122,6 +132,15 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback,
                 }
             }
         });
+    }
+     //   focusOnLatLon(10.762913, 106.6821717, 10);
+
+    public void focusOnLatLon(double lat, double lon, double zoom) {
+        if (mMap == null) return;
+
+        LatLng focus = new LatLng(lat, lon);
+        mMap.moveCamera(CameraUpdateFactory.zoomTo(10));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(focus));
     }
 
     private Marker addMarkerOnMap(double lat, double lng, String name) {

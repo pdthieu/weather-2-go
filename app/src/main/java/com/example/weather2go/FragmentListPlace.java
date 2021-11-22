@@ -7,22 +7,36 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.example.weather2go.model.Place;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 public class FragmentListPlace extends Fragment {
 
     View view;
 
-    private final ArrayList<Place> mPlaceList = new ArrayList<>();
+    private final ArrayList<String> mPlaceList = new ArrayList<>();
 
     private RecyclerView mRecyclerView;
+    private TextView mEmptyView;
     private PlaceListAdapter mAdapter;
 
     @Override
@@ -36,32 +50,48 @@ public class FragmentListPlace extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // TODO: get favor place list from firebase
+        final FirebaseFirestore db = FirebaseFirestore.getInstance();
+        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        final String uid = user.getUid();
+        final DocumentReference docRef = db.collection("users").document(uid);
 
-        mPlaceList.add(new Place());
-        mPlaceList.add(new Place());
-        mPlaceList.add(new Place());
-        mPlaceList.add(new Place());
-        mPlaceList.add(new Place());
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        ArrayList<String> places = (ArrayList<String>) document.get("places");
+                        for (String p : places) {
+                            mPlaceList.add(p);
+                            Log.d("Place", p);
+                        }
 
-        mPlaceList.get(0).setLat(10.762913);
-        mPlaceList.get(0).setLon(106.6821717);
+                    } else {
+                        Log.d("Test", "No such document");
+                    }
+                } else {
+                    Log.d("test", "get failed with ", task.getException());
+                }
 
-        mPlaceList.get(1).setLat(13.7097838);
-        mPlaceList.get(1).setLon(107.6475153);
+                SwipeRefreshLayout srl = view.findViewById(R.id.swipe_refresh_layout);
+                srl.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                    @Override
+                    public void onRefresh() {
+                        mAdapter.update();
+                    }
+                });
 
-        mPlaceList.get(2).setLat(16.7356687);
-        mPlaceList.get(2).setLon(106.6722456);
+                mRecyclerView = view.findViewById(R.id.recyclerview);
+                mEmptyView = view.findViewById(R.id.empty_view);
+                mAdapter = new PlaceListAdapter(getActivity(), getContext(), mPlaceList, srl, mEmptyView);
+                mRecyclerView.setAdapter(mAdapter);
+                mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+            }
+        });
+    }
 
-        mPlaceList.get(3).setLat(18.3607329);
-        mPlaceList.get(3).setLon(105.5240866);
-
-        mPlaceList.get(4).setLat(20.9740874);
-        mPlaceList.get(4).setLon(105.3724892);
-
-        mRecyclerView = view.findViewById(R.id.recyclerview);
-        mAdapter = new PlaceListAdapter(this.getContext(), mPlaceList);
-        mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
+    public PlaceListAdapter getAdapter() {
+        return mAdapter;
     }
 }
