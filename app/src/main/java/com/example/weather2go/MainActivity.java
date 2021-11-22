@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.SearchView;
 
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -91,6 +92,42 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu, menu);
+
+        SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+
+            final VPAdapter vpAdapter = (VPAdapter)viewPager.getAdapter();
+            final FragmentListPlace fragmentListPlace = (FragmentListPlace) vpAdapter.getItem(1);
+            PlaceListAdapter placeListAdapter = fragmentListPlace.getAdapter();
+
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                switch (viewPager.getCurrentItem()) {
+                    case 0:
+                        // TODO: map search logic implement here
+                        break;
+                    case 1:
+                        placeListAdapter.filter(query);
+                        break;
+                }
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                switch (viewPager.getCurrentItem()) {
+                    case 0:
+                        // TODO: map search logic implement here
+                        break;
+                    case 1:
+                        placeListAdapter.filter(newText);
+                        break;
+                }
+                return true;
+            }
+        });
+
         return super.onCreateOptionsMenu(menu);
     }
 
