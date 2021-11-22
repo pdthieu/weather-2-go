@@ -10,8 +10,6 @@ public class WeatherJSONParser {
     private static final String TAG = "WeatherJSONParser";
 
     public static Weather getWeather(String data) throws JSONException {
-        System.out.println(123);
-        System.out.println(data);
         Weather weather = new Weather();
 
         JSONObject weatherData = new JSONObject(data);
