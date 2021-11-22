@@ -1,5 +1,6 @@
 package com.example.weather2go;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -9,7 +10,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.appcompat.view.menu.ActionMenuItem;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.viewpager.widget.ViewPager;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -19,6 +24,9 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.weather2go.model.Place;
 import com.example.weather2go.model.Weather;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
 
@@ -29,11 +37,13 @@ import java.text.SimpleDateFormat;
 
 public class PlaceListAdapter extends RecyclerView.Adapter<PlaceListAdapter.PlaceViewHolder> {
 
+    private final Activity mActivity;
     private final LayoutInflater mInflater;
     private final ArrayList<Place> mPlaceList;
 
 
-    public PlaceListAdapter(Context context, ArrayList<Place> placeList) {
+    public PlaceListAdapter(Activity activity, Context context, ArrayList<Place> placeList) {
+        mActivity = activity;
         mInflater = LayoutInflater.from(context);
         mPlaceList = placeList;
     }
@@ -103,9 +113,7 @@ public class PlaceListAdapter extends RecyclerView.Adapter<PlaceListAdapter.Plac
 
                             try {
                                 String icon = weather.currentWeather.getIcon();
-                                URL url = new URL("https://openweathermap.org/img/wn/" + icon + "@2x.png");
-                                Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-                                mIcon.setImageBitmap(bmp);
+                                Picasso.with(mIcon.getContext()).load("https://openweathermap.org/img/wn/" + icon + "@2x.png").into(mIcon);
                             }
                             catch (Exception e) {
 
@@ -124,16 +132,23 @@ public class PlaceListAdapter extends RecyclerView.Adapter<PlaceListAdapter.Plac
         @Override
         public void onClick(View view) {
             // Get the position of the item that was clicked.
-//            int mPosition = getLayoutPosition();
-//
-//            // Use that to access the affected item in mWordList.
-//            String element = mWordList.get(mPosition);
-//            // Change the word in the mWordList.
-//
-//            mWordList.set(mPosition, "Clicked! " + element);
-            // Notify the adapter, that the data has changed so it can
-            // update the RecyclerView to display the data.
-            mAdapter.notifyDataSetChanged();
+            int mPosition = getLayoutPosition();
+
+            // Use that to access the affected item in mWordList.
+            Place place = mPlaceList.get(mPosition);
+
+            ViewPager viewPager = mActivity.findViewById(R.id.viewPager);
+            viewPager.setCurrentItem(0);
+
+            VPAdapter vpAdapter = (VPAdapter) viewPager.getAdapter();
+
+            if (vpAdapter == null) {
+                return;
+            }
+
+            MapsFragment map = (MapsFragment) vpAdapter.getItem(0);
+
+            map.focusOnLatLon(place.getLat(), place.getLon(), 10);
         }
     }
 
@@ -149,6 +164,12 @@ public class PlaceListAdapter extends RecyclerView.Adapter<PlaceListAdapter.Plac
         Place mCurrent = mPlaceList.get(position);
         // Add the data to the view holder.
         holder.bindPlace(mInflater.getContext(), mCurrent);
+    }
+
+    public void update(SwipeRefreshLayout swipeRefreshLayout) {
+        swipeRefreshLayout.setRefreshing(true);
+        this.notifyDataSetChanged();
+        swipeRefreshLayout.setRefreshing(false);
     }
 
     @Override

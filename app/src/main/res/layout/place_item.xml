@@ -49,8 +49,8 @@
 
             <LinearLayout
                 android:id="@+id/icon_row"
-                android:layout_width="200dp"
-                android:layout_height="100dp"
+                android:layout_width="150dp"
+                android:layout_height="50dp"
                 android:orientation="horizontal"
                 android:layout_below="@id/place_dt">
 
@@ -58,14 +58,15 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical"
-                    android:layout_weight="1"
-                    android:layout_margin="10dp">
+                    android:layout_weight="1">
 
                     <ImageView
                         android:src="@drawable/humidity"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
-                        android:layout_weight="1"/>
+                        android:layout_weight="1"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"/>
                     <TextView
                         android:id="@+id/place_humidity"
                         android:layout_width="match_parent"
@@ -80,14 +81,15 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical"
-                    android:layout_weight="1"
-                    android:layout_margin="10dp">
+                    android:layout_weight="1">
 
                     <ImageView
                         android:src="@drawable/clouds"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
-                        android:layout_weight="1"/>
+                        android:layout_weight="1"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"/>
                     <TextView
                         android:id="@+id/place_cloud"
                         android:layout_width="match_parent"
@@ -102,14 +104,15 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical"
-                    android:layout_weight="1"
-                    android:layout_margin="10dp">
+                    android:layout_weight="1">
 
                     <ImageView
                         android:src="@drawable/wind"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
-                        android:layout_weight="1"/>
+                        android:layout_weight="1"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"/>
                     <TextView
                         android:id="@+id/place_wind"
                         android:layout_width="match_parent"
@@ -129,12 +132,11 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:layout_gravity="center_vertical"
-            android:layout_weight="1"
+            android:layout_weight="2"
             android:gravity="center">
 
             <ImageView
                 android:id="@+id/weather_icon"
-                android:src="@drawable/clouds"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
 

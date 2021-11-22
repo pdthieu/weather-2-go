@@ -54,7 +54,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback,
         GoogleMap.OnMarkerClickListener,
         GoogleMap.OnMarkerDragListener, GoogleMap.OnMapClickListener {
 
-    private GoogleMap mMap;
+    private GoogleMap mMap = null;
     private final String url = "https://api.openweathermap.org/data/2.5/weather";
     private final String appid = "18a8967084c88b2a4b6e0e5045e5ac03";
     private List<Marker> listMarker = new ArrayList<Marker>();
@@ -62,7 +62,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback,
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        LatLng hcmus = new LatLng(10.762913,106.6821717);
+//        LatLng hcmus = new LatLng(10.762913,106.6821717);
         Marker marker = addMarkerOnMap(10.762913,106.6821717, "HCMUS");
         listMarker.add(marker);
 
@@ -71,8 +71,17 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback,
         mMap.setOnMarkerDragListener(this);
 
 //        googleMap.addMarker(new MarkerOptions().position(hcmus).title("Marker in HCMUS"));
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(hcmus));
+//        googleMap.moveCamera(CameraUpdateFactory.newLatLng(hcmus));
+        focusOnLatLon(10.762913, 106.6821717, 10);
     };
+
+    public void focusOnLatLon(double lat, double lon, double zoom) {
+        if (mMap == null) return;
+
+        LatLng focus = new LatLng(lat, lon);
+        mMap.moveCamera(CameraUpdateFactory.zoomTo(10));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(focus));
+    }
 
     private Marker addMarkerOnMap(double lat, double lng, String name) {
             LatLng position = new LatLng(lat, lng);
