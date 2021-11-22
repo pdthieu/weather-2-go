@@ -6,23 +6,42 @@
     tools:context=".BottomSheet"
     android:orientation="vertical"
     android:background="@drawable/background_bottom_sheet">
-
-    <TextView
-        android:layout_marginTop="10dp"
-        android:textSize="20dp"
-        android:text="City name"
-        android:layout_marginStart="30dp"
-        android:id="@+id/textViewCityName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-    <TextView
-        android:layout_marginTop="2dp"
-        android:textSize="20dp"
-        android:text="Country"
-        android:layout_marginStart="30dp"
-        android:id="@+id/textViewCountry"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+    <LinearLayout
+        android:weightSum="4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <LinearLayout
+            android:layout_weight="3"
+            android:layout_width="0dp"
+            android:orientation="vertical"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_marginTop="10dp"
+                android:textSize="20dp"
+                android:text="City name"
+                android:layout_marginStart="30dp"
+                android:id="@+id/textViewCityName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+            <TextView
+                android:layout_marginTop="2dp"
+                android:textSize="20dp"
+                android:text="Country"
+                android:layout_marginStart="30dp"
+                android:id="@+id/textViewCountry"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+        <CheckBox
+            android:id="@+id/checkBox"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Liked"
+            tools:ignore="InvalidId" />
+    </LinearLayout>
     <ImageView
         android:id="@+id/imageIcon"
         android:src="@mipmap/ic_launcher"

@@ -2,13 +2,18 @@ package com.example.weather2go;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.location.Location;
 import android.net.Uri;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,6 +29,9 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.weather2go.model.Weather;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -32,12 +40,22 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.SetOptions;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -50,16 +68,22 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MapsFragment extends Fragment implements OnMapReadyCallback,
         GoogleMap.OnMarkerClickListener,
         GoogleMap.OnMarkerDragListener, GoogleMap.OnMapClickListener {
 
-    private GoogleMap mMap = null;
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
+    FirebaseAuth auth = FirebaseAuth.getInstance();
+    private GoogleMap mMap;
     private final String url = "https://api.openweathermap.org/data/2.5/weather";
     private final String appid = "18a8967084c88b2a4b6e0e5045e5ac03";
     private List<Marker> listMarker = new ArrayList<Marker>();
+    FusedLocationProviderClient client;
+    SupportMapFragment supportMapFragment;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -78,18 +102,38 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback,
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-//        LatLng hcmus = new LatLng(10.762913,106.6821717);
-        Marker marker = addMarkerOnMap(10.762913,106.6821717, "HCMUS");
-        listMarker.add(marker);
-
         mMap.setOnMarkerClickListener(this);
         mMap.setOnMapClickListener(this);
         mMap.setOnMarkerDragListener(this);
+    }
 
-//        googleMap.addMarker(new MarkerOptions().position(hcmus).title("Marker in HCMUS"));
-//        googleMap.moveCamera(CameraUpdateFactory.newLatLng(hcmus));
-        focusOnLatLon(10.762913, 106.6821717, 10);
-    };
+    private void getCurrentLocation() {
+        // Initialize task location
+        Task<Location> task = client.getLastLocation();
+        task.addOnSuccessListener(new OnSuccessListener<Location>() {
+            @Override
+            public void onSuccess(Location location) {
+                // When success
+                if (location != null) {
+                    // Sync map
+                    supportMapFragment.getMapAsync(new OnMapReadyCallback() {
+                        @Override
+                        public void onMapReady(@NonNull GoogleMap googleMap) {
+                            // Initialize lat lng
+                            LatLng latLng = new LatLng(location.getLatitude(),
+                                    location.getLongitude());
+                            System.out.println("--------------------" + latLng);
+                            // Add marker
+                            Marker marker = addMarkerOnMap(location.getLatitude(),
+                                    location.getLongitude(), "I'm there");
+                            listMarker.add(marker);
+                        }
+                    });
+                }
+            }
+        });
+    }
+     //   focusOnLatLon(10.762913, 106.6821717, 10);
 
     public void focusOnLatLon(double lat, double lon, double zoom) {
         if (mMap == null) return;
@@ -104,8 +148,10 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback,
             MarkerOptions markerOptions = new MarkerOptions()
                     .position(position)
                     .draggable(true)
-                    .visible(true);
+                    .visible(true)
+                    .title(name);
             Marker marker = mMap.addMarker(markerOptions);
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(position, 15));
             return marker;
         };
 
@@ -121,10 +167,24 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback,
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        SupportMapFragment mapFragment =
+        supportMapFragment =
                 (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
-        if (mapFragment != null) {
-            mapFragment.getMapAsync(this);
+        if (supportMapFragment != null) {
+            supportMapFragment.getMapAsync(this);
+        }
+
+        client = LocationServices.getFusedLocationProviderClient(getActivity());
+//        getCurrentLocation();
+        if (ActivityCompat.checkSelfPermission(getActivity(),
+                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            // When permission grated
+            // Call method
+            getCurrentLocation();
+        } else {
+            // When permission denied
+            // Request permission
+            ActivityCompat.requestPermissions(getActivity(),
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 44);
         }
     }
 
@@ -137,6 +197,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback,
         }
         listMarker.clear();
         listMarker.add(marker);
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
     }
 
     @Override
@@ -200,5 +261,16 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback,
     public void toggleBottomSheet(Weather weather) {
         BottomSheet bottomSheet = BottomSheet.newInstance(weather);
         bottomSheet.show(getActivity().getSupportFragmentManager(), BottomSheet.TAG);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == 44) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // When permission grated
+                // call method
+                getCurrentLocation();
+            }
+        }
     }
 }
