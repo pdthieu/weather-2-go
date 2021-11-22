@@ -46,7 +46,7 @@ public class BottomSheet extends BottomSheetDialogFragment {
     FirebaseAuth auth = FirebaseAuth.getInstance();
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     TextView txtName, txtStatus, txtCountry, txtTemp, txtHumidity, txtCloud, txtWind, txtDay;
-    ImageView imgIcon;
+    ImageView imgIcon, heart;
     Button btnForecast;
     CheckBox checkBox;
     private String cityName = "";
@@ -91,7 +91,7 @@ public class BottomSheet extends BottomSheetDialogFragment {
         txtTemp = (TextView) view.findViewById(R.id.textViewTemp);
         imgIcon = (ImageView) view.findViewById(R.id.imageIcon);
         btnForecast = (Button) view.findViewById(R.id.buttonForecast);
-        checkBox = (CheckBox) view.findViewById(R.id.checkBox);
+        heart = (ImageView) view.findViewById(R.id.heart);
         NhapThongTin();
         btnForecast.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -102,17 +102,19 @@ public class BottomSheet extends BottomSheetDialogFragment {
             }
         });
 
-        checkBox.setOnClickListener(new View.OnClickListener() {
+        heart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                if(checkBox.isChecked()) {
-                    Log.e("checkbox", "YES");
+                String tag = heart.getTag().toString();
+                if (tag.equals("white")) {
+                    heart.setTag("red");
+                    heart.setImageResource(R.drawable.heart_red);
                     db.collection("users").document(auth.getUid()).update("places",
                             FieldValue.arrayUnion(cityName));
                 }
                 else {
-                    Log.e("checkbox", "NO");
+                    heart.setTag("white");
+                    heart.setImageResource(R.drawable.heart);
                     db.collection("users").document(auth.getUid()).update("places",
                             FieldValue.arrayRemove(cityName));
                 }
@@ -134,7 +136,9 @@ public class BottomSheet extends BottomSheetDialogFragment {
                             Log.e("Place", p);
                             city.add(p);
                             if (p.toString().equals(cityName.toString())) {
-                                checkBox.setChecked(true);
+//                                checkBox.setChecked(true);
+                                heart.setTag("red");
+                                heart.setImageResource(R.drawable.heart_red);
                             }
                         }
 

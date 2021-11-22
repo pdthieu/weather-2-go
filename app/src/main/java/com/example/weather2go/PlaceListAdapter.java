@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.view.menu.ActionMenuItem;
@@ -28,6 +29,7 @@ import com.android.volley.toolbox.Volley;
 import com.example.weather2go.model.Place;
 import com.example.weather2go.model.Weather;
 import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -47,6 +49,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
+import java.util.Map;
 
 public class PlaceListAdapter extends RecyclerView.Adapter<PlaceListAdapter.PlaceViewHolder> {
 
@@ -169,10 +172,49 @@ public class PlaceListAdapter extends RecyclerView.Adapter<PlaceListAdapter.Plac
                 return;
             }
 
+
             MapsFragment map = (MapsFragment) vpAdapter.getItem(0);
 
-//            map.focusOnLatLon(place.getLat(), place.getLon(), 10);
+            getLatLng(place, map);
+//            map.focusOnLatLon(position.latitude, position.longitude, 15);
         }
+    }
+
+    private void getLatLng(String place, MapsFragment map) {
+        RequestQueue requestQueue = Volley.newRequestQueue(mActivity);
+        String tempUrl = "https://api.openweathermap.org/data/2.5/weather?q="+place+"&appid=18a8967084c88b2a4b6e0e5045e5ac03";
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, tempUrl,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Weather weather = null;
+                        try {
+                            weather = WeatherJSONParser.getWeather(response);
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                        if (weather == null) {
+                            Toast.makeText(mActivity, "Can't load weather here !",
+                                    Toast.LENGTH_SHORT).show();
+                            return;
+                        };
+
+                        // print thong tin thoi tiet
+                        double lat = weather.coord.getLat();
+                        double lng = weather.coord.getLon();
+                        map.addMarkerOnMap(lat, lng, place);
+                        map.focusOnLatLon(lat, lng, 15);
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(mActivity, error.toString().trim(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        requestQueue.add(stringRequest);
     }
 
     @Override

@@ -143,7 +143,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback,
         mMap.moveCamera(CameraUpdateFactory.newLatLng(focus));
     }
 
-    private Marker addMarkerOnMap(double lat, double lng, String name) {
+    public Marker addMarkerOnMap(double lat, double lng, String name) {
             LatLng position = new LatLng(lat, lng);
             MarkerOptions markerOptions = new MarkerOptions()
                     .position(position)
@@ -151,6 +151,11 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback,
                     .visible(true)
                     .title(name);
             Marker marker = mMap.addMarker(markerOptions);
+            for(Marker p : listMarker) {
+                p.remove();
+            }
+            listMarker.clear();
+            listMarker.add(marker);
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(position, 15));
             return marker;
         };
@@ -192,11 +197,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback,
     public void onMapClick(@NonNull LatLng latLng) {
         Marker marker = addMarkerOnMap(latLng.latitude, latLng.longitude,
                 "");
-        for(Marker p : listMarker) {
-            p.remove();
-        }
-        listMarker.clear();
-        listMarker.add(marker);
+
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
     }
 
