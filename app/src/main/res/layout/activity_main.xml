@@ -6,6 +6,25 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity"
     android:orientation="vertical">
+<!--    <LinearLayout-->
+<!--        android:layout_weight="4"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:orientation="horizontal">-->
+<!--        <EditText-->
+<!--            android:id="@+id/textName"-->
+<!--            android:hint="Enter City Name"-->
+<!--            android:text="ADU"-->
+<!--            android:textSize="20dp"-->
+<!--            android:layout_weight="3"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="wrap_content"/>-->
+<!--        <Button-->
+<!--            android:id="@+id/buttonSearch"-->
+<!--            android:layout_weight="1"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="wrap_content"/>-->
+<!--    </LinearLayout>-->
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabLayout"

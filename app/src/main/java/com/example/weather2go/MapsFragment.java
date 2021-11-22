@@ -19,6 +19,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.weather2go.model.Weather;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -30,6 +31,8 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -40,24 +43,28 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 public class MapsFragment extends Fragment implements OnMapReadyCallback,
-        GoogleMap.OnMapLongClickListener, GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener, GoogleMap.OnMarkerDragListener {
+        GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener,
+        GoogleMap.OnMarkerDragListener, GoogleMap.OnMapClickListener {
 
     private GoogleMap mMap;
-    private final String url = "https://api.openweathermap.org/data/2.5/find";
+    private final String url = "https://api.openweathermap.org/data/2.5/weather";
     private final String appid = "18a8967084c88b2a4b6e0e5045e5ac03";
+    private List<Marker> listMarker = new ArrayList<Marker>();
 
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
         LatLng hcmus = new LatLng(10.762913,106.6821717);
-        addMarkerOnMap(10.762913,106.6821717, "HCMUS");
+        Marker marker = addMarkerOnMap(10.762913,106.6821717, "HCMUS");
+        listMarker.add(marker);
 
-        mMap.setOnMapLongClickListener(this);
         mMap.setOnMarkerClickListener(this);
+        mMap.setOnMapClickListener(this);
 
         mMap.setOnMarkerDragListener(this);
 
@@ -72,11 +79,9 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback,
             LatLng position = new LatLng(lat, lng);
             MarkerOptions markerOptions = new MarkerOptions()
                     .position(position)
-                    .title(name)
                     .draggable(true)
                     .visible(true);
             Marker marker = mMap.addMarker(markerOptions);
-            marker.setTag("https://www.hcmus.edu.vn");
             return marker;
         };
 
@@ -98,58 +103,50 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback,
         }
     }
 
-    private int nextAvailableID = 1;
     @Override
-    public void onMapLongClick(@NonNull LatLng latLng) {
+    public void onMapClick(@NonNull LatLng latLng) {
         Marker marker = addMarkerOnMap(latLng.latitude, latLng.longitude,
-                String.valueOf(nextAvailableID++));
-        marker.setTitle(marker.getPosition().toString());
+                "");
+        for(Marker p : listMarker) {
+            p.remove();
+        }
+        listMarker.clear();
+        listMarker.add(marker);
     }
 
     @Override
     public boolean onMarkerClick(@NonNull Marker marker) {
-//        System.out.println(marker.getPosition());
-        marker.setTitle("Here");
-        return false;
-    }
-
-    @Override
-    public void onInfoWindowClick(@NonNull Marker marker) {
         RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
         double lat = marker.getPosition().latitude;
         double lng = marker.getPosition().longitude;
-        String tempUrl = url + "?lat=" + lat + "&lon=" + lng + "&cnt=1&appid=" + appid;
+        String tempUrl = url + "?lat=" + lat + "&lon=" + lng + "&appid=" + appid;
         System.out.println(tempUrl);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, tempUrl,
                 new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                try {
-                    // lay 1 object weather
-                    JSONObject jsonObject =
-                            new JSONObject(response).getJSONArray("list").getJSONObject(0);
-                    //
-                    // --- lay thong tin thoi tiet ----
-                    String name = jsonObject.getString("name");
-                    String day = jsonObject.getString("dt");
-                    long l = Long.valueOf();
-                    Date date = new Date(l*1000L);
-                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEEE yyyy-MM-dd " +
-                            "HH-mm-ss");
-                    day = simpleDateFormat.format(date);
+                    @Override
+                    public void onResponse(String response) {
+                        Weather weather = null;
+                        try {
+                            weather = WeatherJSONParser.getWeather(response);
 
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
 
+                        if (weather == null) {
+                            Toast.makeText(getActivity(), "Can't load weather here !",
+                                    Toast.LENGTH_SHORT).show();
+                            return;
+                        };
 
-
-
-                    // Hien thi thong tin thoi tiet
-                    Toast.makeText(getActivity(), name, Toast.LENGTH_SHORT).show();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    System.out.println(e);
-                }
-            }
-        }, new Response.ErrorListener() {
+                        // print thong tin thoi tiet
+                        String name = weather.getName();
+                        int dt = weather.getDt();
+                        int temp = (int) weather.main.getTemp() - 273;
+                        marker.setTitle(name);
+                        toggleBottomSheet(weather);
+                    }
+                }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Toast.makeText(getActivity(), error.toString().trim(), Toast.LENGTH_SHORT).show();
@@ -157,6 +154,12 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback,
         });
 
         requestQueue.add(stringRequest);
+        return false;
+    }
+
+    @Override
+    public void onInfoWindowClick(@NonNull Marker marker) {
+
     }
 
     @Override
@@ -172,5 +175,10 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback,
     @Override
     public void onMarkerDragEnd(@NonNull Marker marker) {
 
+    }
+
+    public void toggleBottomSheet(Weather weather) {
+        BottomSheet bottomSheet = BottomSheet.newInstance(weather);
+        bottomSheet.show(getActivity().getSupportFragmentManager(), BottomSheet.TAG);
     }
 }

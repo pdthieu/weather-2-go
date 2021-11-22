@@ -3,12 +3,16 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/WORK/weather-2-go/app/src/main/res/drawable/ic_launcher_background.xml" value="0.21614583333333334" />
+        <entry key="..\:/WORK/weather-2-go/app/src/main/res/layout/activity_forecast_weather.xml" value="0.1859375" />
         <entry key="..\:/WORK/weather-2-go/app/src/main/res/layout/activity_main.xml" value="0.2" />
         <entry key="..\:/WORK/weather-2-go/app/src/main/res/layout/activity_maps.xml" value="0.1" />
+        <entry key="..\:/WORK/weather-2-go/app/src/main/res/layout/fragment_bottom_sheet.xml" value="0.22" />
         <entry key="..\:/WORK/weather-2-go/app/src/main/res/layout/fragment_list_location.xml" value="0.2" />
         <entry key="..\:/WORK/weather-2-go/app/src/main/res/layout/fragment_main.xml" value="0.12447916666666667" />
         <entry key="..\:/WORK/weather-2-go/app/src/main/res/layout/fragment_map.xml" value="0.2" />
         <entry key="..\:/WORK/weather-2-go/app/src/main/res/layout/fragment_maps.xml" value="0.11927083333333334" />
+        <entry key="..\:/WORK/weather-2-go/app/src/main/res/layout/row_listview.xml" value="0.22" />
       </map>
     </option>
   </component>
