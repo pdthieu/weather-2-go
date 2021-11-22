@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
                 FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
 
         vpAdapter.addFragment(new MapsFragment(), "Maps");
-        vpAdapter.addFragment(new LocationsFragment(), "Places");
+        vpAdapter.addFragment(new FragmentListPlace(), "Places");
         viewPager.setAdapter(vpAdapter);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.app_bar);
