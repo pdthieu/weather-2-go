@@ -26,7 +26,7 @@ import com.google.firebase.auth.FirebaseUser;
 public class AccountActivity extends AppCompatActivity {
     public static final   String TAG = AccountActivity.class.getSimpleName();
     private Button btnChangeEmail, btnChangePassword, btnSendResetEmail, btnRemoveUser,
-            changeEmail, changePassword, sendEmail, remove, signOut;
+            changeEmail, changePassword, sendEmail, cancel, remove, signOut;
     private EditText oldEmail, newEmail, password, newPassword;
     private ProgressBar progressBar;
     private FirebaseAuth.AuthStateListener authListener;
@@ -49,8 +49,11 @@ public class AccountActivity extends AppCompatActivity {
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user == null) {
-                    startActivity(new Intent(AccountActivity.this, LoginActivity.class));
-                    finish();
+                    Intent i = new Intent(AccountActivity.this, LoginActivity.class);
+                    i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP |
+                            Intent.FLAG_ACTIVITY_CLEAR_TASK |
+                            Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(i);
                 }
             }
         };
@@ -61,6 +64,7 @@ public class AccountActivity extends AppCompatActivity {
         changeEmail = (Button) findViewById(R.id.changeEmail);
         changePassword = (Button) findViewById(R.id.changePass);
         sendEmail = (Button) findViewById(R.id.send);
+        cancel = (Button) findViewById(R.id.cancel);
         remove = (Button) findViewById(R.id.remove);
         signOut = (Button) findViewById(R.id.sign_out);
 
@@ -77,6 +81,7 @@ public class AccountActivity extends AppCompatActivity {
         changePassword.setVisibility(View.GONE);
         sendEmail.setVisibility(View.GONE);
         remove.setVisibility(View.GONE);
+        cancel.setVisibility(View.GONE);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         if (progressBar != null) {
             progressBar.setVisibility(View.GONE);
@@ -92,6 +97,7 @@ public class AccountActivity extends AppCompatActivity {
                 changePassword.setVisibility(View.GONE);
                 sendEmail.setVisibility(View.GONE);
                 remove.setVisibility(View.GONE);
+                cancel.setVisibility(View.VISIBLE);
             }
         });
         changeEmail.setOnClickListener(new View.OnClickListener() {
@@ -120,6 +126,21 @@ public class AccountActivity extends AppCompatActivity {
             }
         });
 
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                oldEmail.setVisibility(View.GONE);
+                newEmail.setVisibility(View.GONE);
+                password.setVisibility(View.GONE);
+                newPassword.setVisibility(View.GONE);
+                changeEmail.setVisibility(View.GONE);
+                changePassword.setVisibility(View.GONE);
+                sendEmail.setVisibility(View.GONE);
+                remove.setVisibility(View.GONE);
+                cancel.setVisibility(View.GONE);
+            }
+        });
+
         btnChangePassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -131,8 +152,10 @@ public class AccountActivity extends AppCompatActivity {
                 changePassword.setVisibility(View.VISIBLE);
                 sendEmail.setVisibility(View.GONE);
                 remove.setVisibility(View.GONE);
+                cancel.setVisibility(View.VISIBLE);
             }
         });
+
         changePassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -194,6 +217,7 @@ public class AccountActivity extends AppCompatActivity {
                 changePassword.setVisibility(View.GONE);
                 sendEmail.setVisibility(View.VISIBLE);
                 remove.setVisibility(View.GONE);
+                cancel.setVisibility(View.VISIBLE);
             }
         });
         sendEmail.setOnClickListener(new View.OnClickListener() {
