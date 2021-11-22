@@ -9,3 +9,4 @@
     tools:context=".MapsFragment"
     map:cameraTargetLng="106.6821717"
     map:cameraTargetLat="10.762913"/>
+

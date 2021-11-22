@@ -8,7 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-public class FragmentListLocation extends Fragment {
+public class LocationsFragment extends Fragment {
 
     View view;
 
@@ -16,7 +16,7 @@ public class FragmentListLocation extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        view = inflater.inflate(R.layout.fragment_list_location, container, false);
+        view = inflater.inflate(R.layout.fragment_locations, container, false);
         return view;
     }
 }
