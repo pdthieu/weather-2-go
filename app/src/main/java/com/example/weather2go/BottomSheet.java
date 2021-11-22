@@ -6,10 +6,12 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -17,21 +19,36 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.example.weather2go.model.Weather;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.squareup.picasso.Picasso;
 
 import org.w3c.dom.Text;
 
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public class BottomSheet extends BottomSheetDialogFragment {
 
+    FirebaseAuth auth = FirebaseAuth.getInstance();
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
     TextView txtName, txtStatus, txtCountry, txtTemp, txtHumidity, txtCloud, txtWind, txtDay;
     ImageView imgIcon;
     Button btnForecast;
+    CheckBox checkBox;
     private String cityName = "";
 
     private Weather weather;
@@ -58,7 +75,6 @@ public class BottomSheet extends BottomSheetDialogFragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_bottom_sheet, container, false);
-//        Anhxa();
         return view;
     }
 
@@ -75,6 +91,7 @@ public class BottomSheet extends BottomSheetDialogFragment {
         txtTemp = (TextView) view.findViewById(R.id.textViewTemp);
         imgIcon = (ImageView) view.findViewById(R.id.imageIcon);
         btnForecast = (Button) view.findViewById(R.id.buttonForecast);
+        checkBox = (CheckBox) view.findViewById(R.id.checkBox);
         NhapThongTin();
         btnForecast.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -84,10 +101,57 @@ public class BottomSheet extends BottomSheetDialogFragment {
                 startActivity(intent);
             }
         });
+
+        checkBox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if(checkBox.isChecked()) {
+                    Log.e("checkbox", "YES");
+                    db.collection("users").document(auth.getUid()).update("places",
+                            FieldValue.arrayUnion(cityName));
+                }
+                else {
+                    Log.e("checkbox", "NO");
+                    db.collection("users").document(auth.getUid()).update("places",
+                            FieldValue.arrayRemove(cityName));
+                }
+            }
+        });
+    }
+
+    private List<String> getData() {
+        List<String> city = new ArrayList<String>();
+        String uid = auth.getUid();
+        db.collection("users").document(uid).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        List<String> places = (List<String>) document.get("places");
+                        for (String p : places) {
+                            Log.e("Place", p);
+                            city.add(p);
+                            if (p.toString().equals(cityName.toString())) {
+                                checkBox.setChecked(true);
+                            }
+                        }
+
+                    } else {
+                        Log.e("Test", "No such document");
+                    }
+                } else {
+                    Log.e("test", "get failed with ", task.getException());
+                }
+            }
+        });
+        return city;
     }
 
     private void NhapThongTin() {
         try {
+            getData();
             String name = weather.getName();
             txtName.setText("Cityname: " + name);
             cityName = name;
