@@ -1,5 +1,6 @@
 package com.example.weather2go;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -24,11 +25,14 @@ import org.w3c.dom.Text;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 public class BottomSheet extends BottomSheetDialogFragment {
 
     TextView txtName, txtStatus, txtCountry, txtTemp, txtHumidity, txtCloud, txtWind, txtDay;
     ImageView imgIcon;
+    Button btnForecast;
+    private String cityName = "";
 
     private Weather weather;
 
@@ -46,7 +50,6 @@ public class BottomSheet extends BottomSheetDialogFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
 //        NhapThongTin();
     }
 
@@ -71,13 +74,23 @@ public class BottomSheet extends BottomSheetDialogFragment {
         txtDay = (TextView) view.findViewById(R.id.textViewDay);
         txtTemp = (TextView) view.findViewById(R.id.textViewTemp);
         imgIcon = (ImageView) view.findViewById(R.id.imageIcon);
+        btnForecast = (Button) view.findViewById(R.id.buttonForecast);
         NhapThongTin();
+        btnForecast.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getActivity(), ForecastWeather.class);
+                intent.putExtra("name", cityName);
+                startActivity(intent);
+            }
+        });
     }
 
     private void NhapThongTin() {
         try {
             String name = weather.getName();
             txtName.setText("Cityname: " + name);
+            cityName = name;
 
             String country = weather.sys.getCountry();
             txtCountry.setText("Country: " + country);
@@ -98,7 +111,7 @@ public class BottomSheet extends BottomSheetDialogFragment {
             long l = Long.valueOf(day);
             Date date = new Date(l * 1000L);
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEEE yyyy-MM-dd " +
-                    "HH-mm-ss");
+                    "HH:mm:ss", new Locale("en"));
             String dday = simpleDateFormat.format(date);
             txtDay.setText(dday);
 //
@@ -106,9 +119,10 @@ public class BottomSheet extends BottomSheetDialogFragment {
             txtTemp.setText(String.valueOf(temp) + "°C");
 //
             String icon = weather.currentWeather.getIcon();
-            URL url = new URL("http://openweathermap.org/img/wn/" + icon + "@2x.png");
-            Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-            imgIcon.setImageBitmap(bmp);
+            URL url = new URL("https://openweathermap.org/img/wn/" + icon + "@2x.png");
+            Picasso.with(imgIcon.getContext()).load("https://openweathermap.org/img/wn/" + icon +
+                    ".png").into(imgIcon);
+            System.out.println(url);
 
         } catch (Exception e) {
             System.out.println(e);
