@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/fragmentListLocationColor"
+    android:background="@drawable/background_place_fragment"
     tools:context=".FragmentListPlace">
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -24,6 +24,6 @@
         android:layout_height="match_parent"
         android:gravity="center"
         android:visibility="gone"
-        android:text="HCMUS-DMH: DM Hackathon!" />
+        android:text="Nothing to show!" />
 
 </RelativeLayout>
