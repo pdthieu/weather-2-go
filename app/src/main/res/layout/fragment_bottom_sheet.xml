@@ -25,7 +25,7 @@
                 android:id="@+id/textViewCityName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="?android:attr/textColorPrimary"/>
+                android:textColor="@color/white"/>
             <TextView
                 android:layout_marginTop="2dp"
                 android:textSize="20dp"
@@ -34,7 +34,7 @@
                 android:id="@+id/textViewCountry"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="?android:attr/textColorPrimary"/>
+                android:textColor="@color/white"/>
         </LinearLayout>
         <ImageView
             android:id="@+id/heart"
@@ -57,7 +57,7 @@
         android:id="@+id/textViewTemp"
         android:layout_gravity="center"
         android:layout_marginTop="5dp"
-        android:textColor="#BD837A"
+        android:textColor="@color/yellow"
         android:text="Temperature"
         android:textSize="25dp"
         android:layout_width="wrap_content"
@@ -71,7 +71,7 @@
         android:textSize="20dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="?android:attr/textColorSecondary"/>
+        android:textColor="@color/white"/>
 
     <LinearLayout
         android:layout_marginTop="2dp"
@@ -95,7 +95,7 @@
                 android:textSize="20dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="?android:attr/textColorSecondary"/>
+                android:textColor="@color/white"/>
         </LinearLayout>
 
         <LinearLayout
@@ -114,7 +114,7 @@
                 android:textSize="20dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="?android:attr/textColorSecondary"/>
+                android:textColor="@color/white"/>
         </LinearLayout>
 
         <LinearLayout
@@ -133,7 +133,7 @@
                 android:textSize="20dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="?android:attr/textColorSecondary"/>
+                android:textColor="@color/white"/>
         </LinearLayout>
     </LinearLayout>
 
@@ -145,7 +145,7 @@
         android:text="Date update"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="?android:attr/textColorSecondary"/>
+        android:textColor="@color/white"/>
 
     <Button
         android:id="@+id/buttonForecast"
@@ -154,8 +154,6 @@
         android:layout_marginTop="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="?android:attr/textColorPrimary"/>
-
-
+        android:textColor="@color/black"/>
 
 </LinearLayout>

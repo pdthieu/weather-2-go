@@ -154,6 +154,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback,
             // on below line we are getting the location
             // from our list a first position.
             if (addressList == null || addressList.isEmpty()) {
+                Toast.makeText(getActivity(), "No such place",
+                        Toast.LENGTH_SHORT).show();
                 return;
             }
             Address address = addressList.get(0);
@@ -202,8 +204,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback,
         if (mMap == null) return;
 
         LatLng focus = new LatLng(lat, lon);
-        mMap.moveCamera(CameraUpdateFactory.zoomTo(10));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(focus));
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(10));
     }
 
     public Marker addMarkerOnMap(double lat, double lng, String name) {
