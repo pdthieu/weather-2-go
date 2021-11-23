@@ -159,16 +159,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback,
                 return;
             }
             Address address = addressList.get(0);
-
-            // on below line we are creating a variable for our location
-            // where we will add our locations latitude and longitude.
-            LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
-
-            // on below line we are adding marker to that position.
-            mMap.addMarker(new MarkerOptions().position(latLng).title(location));
-
-            // below line is to animate camera to that position.
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 10));
+            addMarkerOnMap(address.getLatitude(), address.getLongitude(), location);
         }
     }
 
