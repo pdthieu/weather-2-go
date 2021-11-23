@@ -106,6 +106,9 @@ public class MainActivity extends AppCompatActivity {
                 switch (viewPager.getCurrentItem()) {
                     case 0:
                         // TODO: map search logic implement here
+                        VPAdapter adapter = (VPAdapter) viewPager.getAdapter();
+                        MapsFragment frag = (MapsFragment) adapter.getItem(0);
+                        frag.search(query);
                         break;
                     case 1:
                         placeListAdapter.filter(query);
