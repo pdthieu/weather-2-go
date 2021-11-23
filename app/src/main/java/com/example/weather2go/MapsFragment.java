@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -16,6 +17,7 @@ import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 
 import android.os.Bundle;
@@ -94,6 +96,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback,
     private List<Marker> listMarker = new ArrayList<Marker>();
     FusedLocationProviderClient client;
     SupportMapFragment supportMapFragment;
+    Marker mCurrLocationMarker;
     View mView;
 
     @Override
@@ -116,6 +119,19 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback,
         mMap.setOnMarkerClickListener(this);
         mMap.setOnMapClickListener(this);
         mMap.setOnMarkerDragListener(this);
+        if (ActivityCompat.checkSelfPermission(getActivity(),
+                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            // When permission grated
+            // Call method
+            Log.e("kiemtra", "---------------------------");
+            getCurrentLocation();
+        } else {
+            // When permission denied
+            // Request permission
+            Log.e("kiemtra2", "---------------------------");
+            requestPermissions(
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 44);
+        }
     }
 
     public void search(String location) {
@@ -155,12 +171,12 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback,
     }
 
     private void getCurrentLocation() {
-        // Initialize task location
         Task<Location> task = client.getLastLocation();
         task.addOnSuccessListener(new OnSuccessListener<Location>() {
             @Override
             public void onSuccess(Location location) {
                 // When success
+                Log.e("success", "----------------------------------------");
                 if (location != null) {
                     // Sync map
                     supportMapFragment.getMapAsync(new OnMapReadyCallback() {
@@ -169,7 +185,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback,
                             // Initialize lat lng
                             LatLng latLng = new LatLng(location.getLatitude(),
                                     location.getLongitude());
-                            System.out.println("--------------------" + latLng);
+                            Log.e("curent", "--------------------" + latLng);
                             // Add marker
                             Marker marker = addMarkerOnMap(location.getLatitude(),
                                     location.getLongitude(), "I'm there");
@@ -215,36 +231,20 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback,
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+
         return inflater.inflate(R.layout.fragment_maps, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+         mView = view;
+        client = LocationServices.getFusedLocationProviderClient(getActivity());
         supportMapFragment =
                 (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
-        client = LocationServices.getFusedLocationProviderClient(getActivity());
-//        getCurrentLocation();
-        if (ActivityCompat.checkSelfPermission(getActivity(),
-                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            // When permission grated
-            // Call method
-            getCurrentLocation();
-        } else {
-            // When permission denied
-            // Request permission
-            ActivityCompat.requestPermissions(getActivity(),
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 44);
-        }
-
         if (supportMapFragment != null) {
             supportMapFragment.getMapAsync(this);
         }
-
-        mView = view;
-
-
-
     }
 
     private void setMarkerCommon() {
@@ -252,14 +252,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback,
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         final String uid = user.getUid();
         final DocumentReference docRef = db.collection("common").document("markers");
-        List<Double> Lat = new ArrayList<>();
-        List<Double> Lon = new ArrayList<>();
-        List<String> Name = new ArrayList<>();
-        Lat.add(21.0245); Lon.add(105.8412); Name.add("Hanoi");
-        Lat.add(10.75); Lon.add(106.6667); Name.add("Ho Chi Minh City");
-        Lat.add(18.6667); Lon.add(105.6667); Name.add("Yen Vinh");
-        Lat.add(16.4667); Lon.add(107.6); Name.add("Hue");
-
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -371,10 +363,13 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback,
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+
+        Log.e("kiemtra4", "---------------------------" + requestCode);
         if (requestCode == 44) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 // When permission grated
                 // call method
+                Log.e("kiemtra3", "-------------------------");
                 getCurrentLocation();
             }
         }
