@@ -11,6 +11,11 @@
         layout="@layout/app_bar"
         android:id="@+id/app_bar"/>
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/curEmail"/>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

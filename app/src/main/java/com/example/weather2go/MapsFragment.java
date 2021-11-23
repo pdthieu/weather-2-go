@@ -4,6 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.Manifest;
 import android.content.Context;
@@ -12,6 +14,8 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
@@ -56,6 +60,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -91,6 +97,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback,
     FusedLocationProviderClient client;
     SupportMapFragment supportMapFragment;
     Marker mCurrLocationMarker;
+    View mView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -98,13 +105,13 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback,
         setHasOptionsMenu(true);
     }
 
-    @Override
-    public void onPrepareOptionsMenu(Menu menu) {
-        MenuItem item = menu.findItem(R.id.action_search);
-        if (item != null) {
-            item.setVisible(false);
-        }
-    }
+//    @Override
+//    public void onPrepareOptionsMenu(Menu menu) {
+//        MenuItem item = menu.findItem(R.id.action_search);
+//        if (item != null) {
+//            item.setVisible(false);
+//        }
+//    }
 
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -124,6 +131,42 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback,
             Log.e("kiemtra2", "---------------------------");
             requestPermissions(
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 44);
+        }
+    }
+
+    public void search(String location) {
+
+        // below line is to create a list of address
+        // where we will store the list of all address.
+        List<Address> addressList = null;
+
+        // checking if the entered location is null or not.
+        if (location != null && !location.isEmpty()) {
+            // on below line we are creating and initializing a geo coder.
+            Geocoder geocoder = new Geocoder(mView.getContext());
+            try {
+                // on below line we are getting location from the
+                // location name and adding that location to address list.
+                addressList = geocoder.getFromLocationName(location, 1);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            // on below line we are getting the location
+            // from our list a first position.
+            if (addressList == null || addressList.isEmpty()) {
+                return;
+            }
+            Address address = addressList.get(0);
+
+            // on below line we are creating a variable for our location
+            // where we will add our locations latitude and longitude.
+            LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
+
+            // on below line we are adding marker to that position.
+            mMap.addMarker(new MarkerOptions().position(latLng).title(location));
+
+            // below line is to animate camera to that position.
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 10));
         }
     }
 
@@ -170,6 +213,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback,
                     .draggable(true)
                     .visible(true)
                     .title(name);
+            if (mMap == null) return null;
             Marker marker = mMap.addMarker(markerOptions);
             marker.showInfoWindow();
             for(Marker p : listMarker) {
@@ -194,6 +238,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback,
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+         mView = view;
         client = LocationServices.getFusedLocationProviderClient(getActivity());
         supportMapFragment =
                 (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
@@ -203,30 +248,43 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback,
     }
 
     private void setMarkerCommon() {
-        List<Double> Lat = new ArrayList<>();
-        List<Double> Lon = new ArrayList<>();
-        List<String> Name = new ArrayList<>();
-        Lat.add(21.0245); Lon.add(105.8412); Name.add("Hanoi");
-        Lat.add(10.75); Lon.add(106.6667); Name.add("Ho Chi Minh City");
-        Lat.add(18.6667); Lon.add(105.6667); Name.add("Yen Vinh");
-        Lat.add(16.4667); Lon.add(107.6); Name.add("Hue");
+        final FirebaseFirestore db = FirebaseFirestore.getInstance();
+        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        final String uid = user.getUid();
+        final DocumentReference docRef = db.collection("common").document("markers");
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
 
-        for(int i = 0; i < 4; i++) {
-            double llat = Lat.get(i).doubleValue();
-            double llon = Lon.get(i).doubleValue();
-            Log.e("ok", llat + " " + llon);
-            LatLng position = new LatLng(llat, llon);
-            Log.e("ok", position.toString());
-            MarkerOptions markerOptions = new MarkerOptions()
-                    .position(position)
-                    .draggable(false)
-                    .visible(true)
-                    .title(Name.get(i).toString())
-                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker));
+                    if (document.exists()) {
+                        ArrayList<Number> lat = (ArrayList<Number>) document.get("lat");
+                        ArrayList<Number> lon = (ArrayList<Number>) document.get("lon");
+                        ArrayList<String> name = (ArrayList<String>) document.get("name");
+                        for (int i = 0; i < lat.size(); ++i) {
+                            double llat = lat.get(i).doubleValue();
+                            double llon = lon.get(i).doubleValue();
+                            Log.e("ok", llat + " " + llon);
+                            LatLng position = new LatLng(llat, llon);
+                            Log.e("ok", position.toString());
+                            MarkerOptions markerOptions = new MarkerOptions()
+                                    .position(position)
+                                    .draggable(false)
+                                    .visible(true)
+                                    .title(name.get(i))
+                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker));
+                            mMap.addMarker(markerOptions);
+                        }
+                    } else {
+                        Log.d("Test", "No such document");
+                    }
+                } else {
+                    Log.d("test", "get failed with ", task.getException());
+                }
 
-            mMap.addMarker(markerOptions);
-        }
-
+            }
+        });
     }
 
     @Override
