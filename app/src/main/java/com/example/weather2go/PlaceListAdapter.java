@@ -203,7 +203,6 @@ public class PlaceListAdapter extends RecyclerView.Adapter<PlaceListAdapter.Plac
                 return;
             }
 
-
             MapsFragment map = (MapsFragment) vpAdapter.getItem(0);
 
             getLatLng(place, map);
@@ -269,6 +268,8 @@ public class PlaceListAdapter extends RecyclerView.Adapter<PlaceListAdapter.Plac
 
     public void update() {
 
+        mSwipeRefreshLayout.setRefreshing(true);
+
         final DocumentReference docRef = mDB.collection("users").document(mUid);
 
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -324,5 +325,9 @@ public class PlaceListAdapter extends RecyclerView.Adapter<PlaceListAdapter.Plac
         }
 
         notifyDataSetChanged();
+    }
+
+    void setFilter(String filter) {
+        mFilter = filter;
     }
 }

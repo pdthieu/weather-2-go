@@ -1,5 +1,6 @@
 package com.example.weather2go;
 
+import androidx.annotation.FractionRes;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -81,8 +82,32 @@ public class MainActivity extends AppCompatActivity {
                 FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
 
         vpAdapter.addFragment(new MapsFragment(), "Maps");
-        vpAdapter.addFragment(new FragmentListPlace(), "Places");
+
+        FragmentListPlace fragmentListPlace = new FragmentListPlace();
+        vpAdapter.addFragment(fragmentListPlace, "Places");
         viewPager.setAdapter(vpAdapter);
+
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                if (position == 0) {
+                    fragmentListPlace.getAdapter().setFilter("");
+                }
+                else {
+                    fragmentListPlace.getAdapter().update();
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(toolbar);
