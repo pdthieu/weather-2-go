@@ -1,6 +1,7 @@
 package com.example.weather2go;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -30,7 +31,6 @@ import java.util.Locale;
 
 public class ForecastWeather extends AppCompatActivity {
     TextView cityName;
-    ImageView imgBack;
     ListView lv;
     CustomAdapterForecast customAdapterForecast;
     ArrayList<WeatherForecast> listWeather;
@@ -46,12 +46,18 @@ public class ForecastWeather extends AppCompatActivity {
         String name = intent.getStringExtra("name");
         get7DaysData(name);
 
-        imgBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onBackPressed();
-            }
-        });
+        Toolbar toolbar = (Toolbar) findViewById(R.id.app_bar);
+        if (toolbar != null) {
+            setSupportActionBar(toolbar);
+            toolbar.setNavigationIcon(R.drawable.ic_action_back);
+            toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onBackPressed();
+                }
+            });
+        }
+
     }
 
     private void get7DaysData(String data) {
@@ -112,7 +118,6 @@ public class ForecastWeather extends AppCompatActivity {
     }
 
     private void anhXa() {
-        imgBack = (ImageView) findViewById(R.id.imageViewBack);
         cityName = (TextView) findViewById(R.id.cityName);
         lv = (ListView) findViewById(R.id.listView);
         listWeather = new ArrayList<WeatherForecast>();

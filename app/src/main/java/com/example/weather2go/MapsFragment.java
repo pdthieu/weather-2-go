@@ -11,6 +11,8 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.net.Uri;
 
@@ -88,6 +90,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback,
     private List<Marker> listMarker = new ArrayList<Marker>();
     FusedLocationProviderClient client;
     SupportMapFragment supportMapFragment;
+    View mView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -95,13 +98,13 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback,
         setHasOptionsMenu(true);
     }
 
-    @Override
-    public void onPrepareOptionsMenu(Menu menu) {
-        MenuItem item = menu.findItem(R.id.action_search);
-        if (item != null) {
-            item.setVisible(false);
-        }
-    }
+//    @Override
+//    public void onPrepareOptionsMenu(Menu menu) {
+//        MenuItem item = menu.findItem(R.id.action_search);
+//        if (item != null) {
+//            item.setVisible(false);
+//        }
+//    }
 
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -109,6 +112,40 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback,
         mMap.setOnMarkerClickListener(this);
         mMap.setOnMapClickListener(this);
         mMap.setOnMarkerDragListener(this);
+    }
+
+    public void search(String location) {
+
+        // below line is to create a list of address
+        // where we will store the list of all address.
+        Log.d("aaa", location);
+        List<Address> addressList = null;
+
+        // checking if the entered location is null or not.
+        if (location != null && !location.isEmpty()) {
+            // on below line we are creating and initializing a geo coder.
+            Geocoder geocoder = new Geocoder(mView.getContext());
+            try {
+                // on below line we are getting location from the
+                // location name and adding that location to address list.
+                addressList = geocoder.getFromLocationName(location, 1);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            // on below line we are getting the location
+            // from our list a first position.
+            Address address = addressList.get(0);
+
+            // on below line we are creating a variable for our location
+            // where we will add our locations latitude and longitude.
+            LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
+
+            // on below line we are adding marker to that position.
+            mMap.addMarker(new MarkerOptions().position(latLng).title(location));
+
+            // below line is to animate camera to that position.
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 10));
+        }
     }
 
     private void getCurrentLocation() {
@@ -183,6 +220,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback,
         if (supportMapFragment != null) {
             supportMapFragment.getMapAsync(this);
         }
+
+        mView = view;
 
         client = LocationServices.getFusedLocationProviderClient(getActivity());
 //        getCurrentLocation();
