@@ -205,7 +205,7 @@ public class PlaceListAdapter extends RecyclerView.Adapter<PlaceListAdapter.Plac
                         double lat = weather.coord.getLat();
                         double lng = weather.coord.getLon();
                         map.addMarkerOnMap(lat, lng, place);
-                        map.focusOnLatLon(lat, lng, 15);
+                        map.focusOnLatLon(lat, lng, 10);
                     }
                 }, new Response.ErrorListener() {
             @Override
