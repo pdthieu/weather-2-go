@@ -41,13 +41,22 @@ public class AccountActivity extends AppCompatActivity {
         toolbar.setTitle(getString(R.string.settings_name));
         setSupportActionBar(toolbar);
 
+
+        toolbar.setNavigationIcon(R.drawable.ic_action_back);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
+
         //get firebase auth instance
         auth = FirebaseAuth.getInstance();
         //get current user
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
         TextView curEmail = (TextView)findViewById(R.id.curEmail);
-        curEmail.setText("Your account email: " + user.getEmail());
+        curEmail.setText(user.getEmail());
 
         authListener = new FirebaseAuth.AuthStateListener() {
             @Override

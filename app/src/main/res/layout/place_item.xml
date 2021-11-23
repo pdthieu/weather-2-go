@@ -22,30 +22,31 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <ImageView
+            android:id="@+id/place_heart"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/heart_red"
+            android:layout_gravity="center"
+            android:tag="red"/>
+
         <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:gravity="center_vertical">
+            android:gravity="center_vertical"
+            android:layout_marginLeft="16dp">
 
-            <ImageView
-                android:id="@+id/place_heart"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/heart_red"
-                android:layout_gravity="center"
-                android:tag="red"/>
 
             <TextView
                 android:id="@+id/place_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
-                android:layout_toRightOf="@id/place_heart"
                 android:ellipsize="end"
                 android:maxLines="1"
-                android:textColor="?android:attr/textColorPrimary"
-                android:textSize="16sp"
+                android:textColor="@color/white"
+                android:textSize="20sp"
                 tools:text="Viet Nam"/>
 
             <TextView
@@ -53,7 +54,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/place_name"
-                android:textColor="?android:attr/textColorSecondary"
+                android:textColor="@color/white"
                 android:textSize="14sp"
                 tools:text="Wed, 31 September"/>
 
@@ -81,7 +82,7 @@
                         android:id="@+id/place_humidity"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textColor="?android:attr/textColorSecondary"
+                        android:textColor="@color/white"
                         android:textSize="12sp"
                         android:textAlignment="center"
                         android:maxLines="1"
@@ -105,7 +106,7 @@
                         android:id="@+id/place_cloud"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textColor="?android:attr/textColorSecondary"
+                        android:textColor="@color/white"
                         android:textSize="12sp"
                         android:textAlignment="center"
                         android:maxLines="1"
@@ -129,7 +130,7 @@
                         android:id="@+id/place_wind"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textColor="?android:attr/textColorSecondary"
+                        android:textColor="@color/white"
                         android:textSize="12sp"
                         android:textAlignment="center"
                         android:maxLines="1"
@@ -157,7 +158,7 @@
                 android:id="@+id/place_temp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="?android:attr/textColorSecondary"
+                android:textColor="@color/white"
                 android:textSize="14sp"
                 android:textAlignment="center"
                 tools:text="666"/>

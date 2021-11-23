@@ -4,8 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ForecastWeather"
-    android:orientation="vertical"
-    android:background="@drawable/background_bottom_sheet">
+    android:orientation="vertical">
 
     <include
         layout="@layout/app_bar"
@@ -17,7 +16,7 @@
         android:id="@+id/cityName"
         android:layout_marginTop="5dp"
         android:layout_gravity="center"
-        android:textColor="#D1CA47"
+        android:textColor="#FF69B4"
         android:textStyle="bold"
         android:text="City Name"
         android:textSize="30dp"/>
@@ -28,8 +27,9 @@
         android:id="@+id/listView"
         android:layout_marginTop="5dp"
         android:padding="5dp"
+        android:background="@color/white"
         android:layout_margin="5dp"
-        android:dividerHeight="5dp"/>
+        android:dividerHeight="10dp"/>
 
 
 </LinearLayout>

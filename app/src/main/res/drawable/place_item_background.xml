@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ripple xmlns:android="http://schemas.android.com/apk/res/android"
-    android:color="@color/green">
+    android:color="@color/blueCyan">
     <item
         android:gravity="center">
         <shape>
-            <solid android:color="@color/green2"/>
+            <solid android:color="@color/blue"/>
 
-            <stroke android:width="3dp"
-                android:color="@color/black"
-                />
+<!--            <stroke android:width="3dp"-->
+<!--                android:color="@color/black"-->
+<!--                />-->
 
             <padding android:left="1dp"
                 android:top="1dp"

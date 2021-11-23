@@ -11,6 +11,11 @@
     <color name="green2">#BFFFBF</color>
     <color name="fragmentMapColor">#49df89</color>
     <color name="fragmentListLocationColor">#ffbd59</color>
+    <color name="blue">#4285F4</color>
+    <color name="green3">#34A853</color>
+    <color name="red">#EA4335</color>
+    <color name="yellow">#FBBC05</color>
+    <color name="blueCyan">#00FFFF</color>
 
 
     <color name="colorPrimary">#00bcd4</color>

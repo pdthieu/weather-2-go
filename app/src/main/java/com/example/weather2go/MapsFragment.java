@@ -188,7 +188,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback,
                             Log.e("curent", "--------------------" + latLng);
                             // Add marker
                             Marker marker = addMarkerOnMap(location.getLatitude(),
-                                    location.getLongitude(), "I'm there");
+                                    location.getLongitude(), "You're here");
                             listMarker.add(marker);
                         }
                     });
@@ -221,7 +221,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback,
             }
             listMarker.clear();
             listMarker.add(marker);
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(position, 10));
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(position, 6));
             return marker;
         };
 
