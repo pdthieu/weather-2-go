@@ -4,6 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.Manifest;
 import android.content.Intent;
@@ -56,6 +58,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -118,7 +122,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback,
 
         // below line is to create a list of address
         // where we will store the list of all address.
-        Log.d("aaa", location);
         List<Address> addressList = null;
 
         // checking if the entered location is null or not.
@@ -134,6 +137,9 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback,
             }
             // on below line we are getting the location
             // from our list a first position.
+            if (addressList == null || addressList.isEmpty()) {
+                return;
+            }
             Address address = addressList.get(0);
 
             // on below line we are creating a variable for our location
@@ -217,12 +223,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback,
         super.onViewCreated(view, savedInstanceState);
         supportMapFragment =
                 (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
-        if (supportMapFragment != null) {
-            supportMapFragment.getMapAsync(this);
-        }
-
-        mView = view;
-
         client = LocationServices.getFusedLocationProviderClient(getActivity());
 //        getCurrentLocation();
         if (ActivityCompat.checkSelfPermission(getActivity(),
@@ -237,9 +237,21 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 44);
         }
 
+        if (supportMapFragment != null) {
+            supportMapFragment.getMapAsync(this);
+        }
+
+        mView = view;
+
+
+
     }
 
     private void setMarkerCommon() {
+        final FirebaseFirestore db = FirebaseFirestore.getInstance();
+        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        final String uid = user.getUid();
+        final DocumentReference docRef = db.collection("common").document("markers");
         List<Double> Lat = new ArrayList<>();
         List<Double> Lon = new ArrayList<>();
         List<String> Name = new ArrayList<>();
@@ -248,22 +260,39 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback,
         Lat.add(18.6667); Lon.add(105.6667); Name.add("Yen Vinh");
         Lat.add(16.4667); Lon.add(107.6); Name.add("Hue");
 
-        for(int i = 0; i < 4; i++) {
-            double llat = Lat.get(i).doubleValue();
-            double llon = Lon.get(i).doubleValue();
-            Log.e("ok", llat + " " + llon);
-            LatLng position = new LatLng(llat, llon);
-            Log.e("ok", position.toString());
-            MarkerOptions markerOptions = new MarkerOptions()
-                    .position(position)
-                    .draggable(false)
-                    .visible(true)
-                    .title(Name.get(i).toString())
-                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker));
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
 
-            mMap.addMarker(markerOptions);
-        }
+                    if (document.exists()) {
+                        ArrayList<Number> lat = (ArrayList<Number>) document.get("lat");
+                        ArrayList<Number> lon = (ArrayList<Number>) document.get("lon");
+                        ArrayList<String> name = (ArrayList<String>) document.get("name");
+                        for (int i = 0; i < lat.size(); ++i) {
+                            double llat = lat.get(i).doubleValue();
+                            double llon = lon.get(i).doubleValue();
+                            Log.e("ok", llat + " " + llon);
+                            LatLng position = new LatLng(llat, llon);
+                            Log.e("ok", position.toString());
+                            MarkerOptions markerOptions = new MarkerOptions()
+                                    .position(position)
+                                    .draggable(false)
+                                    .visible(true)
+                                    .title(name.get(i))
+                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker));
+                            mMap.addMarker(markerOptions);
+                        }
+                    } else {
+                        Log.d("Test", "No such document");
+                    }
+                } else {
+                    Log.d("test", "get failed with ", task.getException());
+                }
 
+            }
+        });
     }
 
     @Override
