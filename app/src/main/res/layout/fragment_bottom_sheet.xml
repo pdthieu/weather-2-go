@@ -24,7 +24,8 @@
                 android:layout_marginStart="30dp"
                 android:id="@+id/textViewCityName"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:textColor="?android:attr/textColorPrimary"/>
             <TextView
                 android:layout_marginTop="2dp"
                 android:textSize="20dp"
@@ -32,7 +33,8 @@
                 android:layout_marginStart="30dp"
                 android:id="@+id/textViewCountry"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:textColor="?android:attr/textColorPrimary"/>
         </LinearLayout>
         <ImageView
             android:id="@+id/heart"
@@ -68,7 +70,8 @@
         android:text="Status"
         android:textSize="20dp"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:textColor="?android:attr/textColorSecondary"/>
 
     <LinearLayout
         android:layout_marginTop="2dp"
@@ -91,7 +94,8 @@
                 android:text="Humidity"
                 android:textSize="20dp"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:textColor="?android:attr/textColorSecondary"/>
         </LinearLayout>
 
         <LinearLayout
@@ -109,7 +113,8 @@
                 android:text="Cloud"
                 android:textSize="20dp"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:textColor="?android:attr/textColorSecondary"/>
         </LinearLayout>
 
         <LinearLayout
@@ -127,7 +132,8 @@
                 android:text="Wind"
                 android:textSize="20dp"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:textColor="?android:attr/textColorSecondary"/>
         </LinearLayout>
     </LinearLayout>
 
@@ -138,7 +144,8 @@
         android:textSize="20dp"
         android:text="Date update"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:textColor="?android:attr/textColorSecondary"/>
 
     <Button
         android:id="@+id/buttonForecast"
@@ -146,7 +153,8 @@
         android:textSize="20dp"
         android:layout_marginTop="10dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:textColor="?android:attr/textColorPrimary"/>
 
 
 
