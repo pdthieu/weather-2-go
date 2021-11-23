@@ -37,6 +37,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.squareup.picasso.Picasso;
 
@@ -62,16 +63,25 @@ public class PlaceListAdapter extends RecyclerView.Adapter<PlaceListAdapter.Plac
     private final TextView mEmptyView;
     private String mFilter;
 
+    private final FirebaseFirestore mDB;
+    private final String mUid;
+
 
     public PlaceListAdapter(Activity activity, Context context, ArrayList<String> placeList, SwipeRefreshLayout swipeRefreshLayout, TextView emptyView) {
         mActivity = activity;
         mInflater = LayoutInflater.from(context);
         mPlaceList = placeList;
+        java.util.Collections.sort(mPlaceList);
+
         visiblePlaceList = new ArrayList<>(mPlaceList);
         mSwipeRefreshLayout = swipeRefreshLayout;
         mRecyclerView = mSwipeRefreshLayout.findViewById(R.id.recyclerview);
         mEmptyView = emptyView;
         mFilter = "";
+
+        mDB = FirebaseFirestore.getInstance();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        mUid = user.getUid();
     }
 
     class PlaceViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -84,7 +94,7 @@ public class PlaceListAdapter extends RecyclerView.Adapter<PlaceListAdapter.Plac
         private TextView mCloud;
         private TextView mWind;
         private ImageView mIcon;
-
+        private ImageView mHeart;
 
         public PlaceViewHolder(View itemView, PlaceListAdapter adapter) {
             super(itemView);
@@ -99,9 +109,30 @@ public class PlaceListAdapter extends RecyclerView.Adapter<PlaceListAdapter.Plac
             mCloud = itemView.findViewById(R.id.place_cloud);
             mWind = itemView.findViewById(R.id.place_wind);
             mIcon = itemView.findViewById(R.id.weather_icon);
+            mHeart = itemView.findViewById(R.id.place_heart);
+
+            mHeart.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    String tag = mHeart.getTag().toString();
+                    if (tag.equals("white")) {
+                        mHeart.setTag("red");
+                        mHeart.setImageResource(R.drawable.heart_red);
+                        mDB.collection("users").document(mUid).update("places", FieldValue.arrayUnion(mName.getText()));
+                    }
+                    else {
+                        mHeart.setTag("white");
+                        mHeart.setImageResource(R.drawable.heart);
+                        mDB.collection("users").document(mUid).update("places", FieldValue.arrayRemove(mName.getText()));
+                    }
+                }
+            });
         }
 
         public void bindPlace(Context context, String place) {
+            mHeart.setTag("red");
+            mHeart.setImageResource(R.drawable.heart_red);
+
             RequestQueue requestQueue = Volley.newRequestQueue(context);
             String url = "https://api.openweathermap.org/data/2.5/weather?q=" + place.replace(' ', '+') + "&appid=18a8967084c88b2a4b6e0e5045e5ac03";
 
@@ -238,10 +269,7 @@ public class PlaceListAdapter extends RecyclerView.Adapter<PlaceListAdapter.Plac
 
     public void update() {
 
-        final FirebaseFirestore db = FirebaseFirestore.getInstance();
-        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        final String uid = user.getUid();
-        final DocumentReference docRef = db.collection("users").document(uid);
+        final DocumentReference docRef = mDB.collection("users").document(mUid);
 
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -256,6 +284,7 @@ public class PlaceListAdapter extends RecyclerView.Adapter<PlaceListAdapter.Plac
                             mPlaceList.add(p);
                             Log.d("Place", p);
                         }
+                        java.util.Collections.sort(mPlaceList);
 
                     } else {
                         Log.d("Test", "No such document");
