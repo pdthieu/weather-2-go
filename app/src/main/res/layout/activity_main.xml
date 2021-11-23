@@ -38,12 +38,14 @@
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Map" />
+            android:text="Map"
+            android:textAlignment="center"/>
 
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="List Location" />
+            android:text="List Location"
+            android:textAlignment="center"/>
 
     </com.google.android.material.tabs.TabLayout>
 

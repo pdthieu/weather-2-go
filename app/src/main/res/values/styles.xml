@@ -22,5 +22,12 @@
 <!--        <item name="android:background">@color/colorStandardBlack</item>-->
 <!--        <item name="android:theme">@color/colorDarkBlue</item>-->
 <!--    </style>-->
+    <!-- Base application theme. -->
+
+    <!--Toolbar theme-->
+
+    <!--Menu Item Theme-->
+
+    <!--Input Theme-->
 
 </resources>

@@ -32,12 +32,20 @@
         <entry key="..\:/WORK/weather-2-go/app/src/main/res/layout/activity_forecast_weather.xml" value="0.1" />
         <entry key="..\:/WORK/weather-2-go/app/src/main/res/layout/activity_main.xml" value="0.2" />
         <entry key="..\:/WORK/weather-2-go/app/src/main/res/layout/activity_maps.xml" value="0.1" />
+        <entry key="..\:/WORK/weather-2-go/app/src/main/res/layout/app_bar.xml" value="0.14427083333333332" />
+        <entry key="..\:/WORK/weather-2-go/app/src/main/res/layout/background_listview.xml" value="0.1" />
         <entry key="..\:/WORK/weather-2-go/app/src/main/res/layout/fragment_bottom_sheet.xml" value="0.22" />
         <entry key="..\:/WORK/weather-2-go/app/src/main/res/layout/fragment_list_location.xml" value="0.2" />
+        <entry key="..\:/WORK/weather-2-go/app/src/main/res/layout/fragment_list_place.xml" value="0.14427083333333332" />
         <entry key="..\:/WORK/weather-2-go/app/src/main/res/layout/fragment_main.xml" value="0.12447916666666667" />
         <entry key="..\:/WORK/weather-2-go/app/src/main/res/layout/fragment_map.xml" value="0.2" />
         <entry key="..\:/WORK/weather-2-go/app/src/main/res/layout/fragment_maps.xml" value="0.11927083333333334" />
         <entry key="..\:/WORK/weather-2-go/app/src/main/res/layout/row_listview.xml" value="0.22" />
+        <entry key="..\:/WORK/weather-2-go/app/src/main/res/layout/heart_red.xml" value="0.1" />
+        <entry key="..\:/WORK/weather-2-go/app/src/main/res/layout/place_item.xml" value="0.1" />
+        <entry key="..\:/WORK/weather-2-go/app/src/main/res/layout/row_listview.xml" value="0.22" />
+        <entry key="..\:/WORK/weather-2-go/app/src/main/res/layout/star.xml" value="0.11875" />
+        <entry key="..\:/WORK/weather-2-go/app/src/main/res/menu/menu.xml" value="0.14427083333333332" />
       </map>
     </option>
   </component>

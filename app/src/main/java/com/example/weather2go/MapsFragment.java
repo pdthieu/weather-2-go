@@ -8,6 +8,8 @@ import androidx.fragment.app.Fragment;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
@@ -39,6 +41,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
@@ -63,6 +66,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -104,7 +108,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback,
 
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
+        setMarkerCommon();
         mMap.setOnMarkerClickListener(this);
         mMap.setOnMapClickListener(this);
         mMap.setOnMarkerDragListener(this);
@@ -187,13 +191,15 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback,
                     .draggable(true)
                     .visible(true)
                     .title(name);
+            if (mMap == null) return null;
             Marker marker = mMap.addMarker(markerOptions);
+            marker.showInfoWindow();
             for(Marker p : listMarker) {
                 p.remove();
             }
             listMarker.clear();
             listMarker.add(marker);
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(position, 15));
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(position, 10));
             return marker;
         };
 
@@ -230,6 +236,34 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback,
             ActivityCompat.requestPermissions(getActivity(),
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 44);
         }
+
+    }
+
+    private void setMarkerCommon() {
+        List<Double> Lat = new ArrayList<>();
+        List<Double> Lon = new ArrayList<>();
+        List<String> Name = new ArrayList<>();
+        Lat.add(21.0245); Lon.add(105.8412); Name.add("Hanoi");
+        Lat.add(10.75); Lon.add(106.6667); Name.add("Ho Chi Minh City");
+        Lat.add(18.6667); Lon.add(105.6667); Name.add("Yen Vinh");
+        Lat.add(16.4667); Lon.add(107.6); Name.add("Hue");
+
+        for(int i = 0; i < 4; i++) {
+            double llat = Lat.get(i).doubleValue();
+            double llon = Lon.get(i).doubleValue();
+            Log.e("ok", llat + " " + llon);
+            LatLng position = new LatLng(llat, llon);
+            Log.e("ok", position.toString());
+            MarkerOptions markerOptions = new MarkerOptions()
+                    .position(position)
+                    .draggable(false)
+                    .visible(true)
+                    .title(Name.get(i).toString())
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker));
+
+            mMap.addMarker(markerOptions);
+        }
+
     }
 
     @Override
@@ -285,7 +319,10 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback,
 
     @Override
     public void onMarkerDragStart(@NonNull Marker marker) {
-        marker.remove();
+        String title = marker.getTitle();
+        if (!title.equals("Hanoi") && !title.equals("Ho Chi Minh City") && !title.equals("Hue") && !title.equals("Yen Vinh")) {
+            marker.remove();
+        }
     }
 
     @Override
