@@ -150,6 +150,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback,
                     .draggable(true)
                     .visible(true)
                     .title(name);
+            if (mMap == null) return null;
             Marker marker = mMap.addMarker(markerOptions);
             for(Marker p : listMarker) {
                 p.remove();
